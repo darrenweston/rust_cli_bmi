@@ -13,19 +13,23 @@ fn main() {
     let data = get_input().unwrap();
     let bmi = data.weight / (data.height * data.height);
 
-    show_bmi(bmi);
+    //show_bmi(bmi);
     show_vertical_bmi(bmi);
 }
 
 fn get_input() -> Result<Data, String> {
+    use std::io::Write;
+
     let mut weight = String::new();
     let mut height = String::new();
 
-    println!("Enter your weight in kg:");
+    print!("Enter your weight in kg: ");
+    io::stdout().flush().unwrap();
     io::stdin().read_line(&mut weight).unwrap();
     let weight: f32 = weight.trim().parse().unwrap();
 
-    println!("Enter your height in meters:");
+    print!("Enter your height in meters: ");
+    io::stdout().flush().unwrap();
     io::stdin().read_line(&mut height).unwrap();
     let height: f32 = height.trim().parse().unwrap();
 
