@@ -61,7 +61,7 @@ fn show_vertical_bmi(bmi: f32) {
     let spacer = "|\n".repeat(REPS).trim_end().to_string();
     let spacer2 = "|\n".repeat(REPS-2).trim_end().to_string();
     let txt = format!("\
--under
+-underweight
 {spacer2}
 |-healthy (18.5)
 {spacer}
@@ -89,7 +89,12 @@ fn show_vertical_bmi(bmi: f32) {
 
     let txt = format!("{pre}{you}{mid}{post}");
 
-    println!("{}", txt.split('\n').rev().map(|s| format!("{s}\n")).collect::<String>());
+    //println!("{}", txt.split('\n').rev().map(|s| format!("{s}\n")).collect::<String>());
+    let output =
+        txt.split('\n')
+            .rev()
+            .fold(String::new(), |acc, s| acc + s + "\n");
+    println!("{output}");
 }
 
 fn clear_screen() {
