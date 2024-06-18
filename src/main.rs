@@ -8,13 +8,17 @@ struct Data {
 fn main() {
     // 1.87 metres is approx 6' 1.5"
     //
+    let hor = std::env::args().nth(1).is_some_and(|a| a.contains("-h"));
 
     clear_screen();
     let data = get_input().unwrap();
     let bmi = data.weight / (data.height * data.height);
 
-    //show_bmi(bmi);
-    show_vertical_bmi(bmi);
+    if hor {
+        show_bmi(bmi);
+    } else {
+        show_vertical_bmi(bmi);
+    }
 }
 
 fn get_input() -> Result<Data, String> {
@@ -43,10 +47,10 @@ fn get_input() -> Result<Data, String> {
 
 fn show_bmi(bmi: f32) {
     let txt = "\n\
-        .----------.--------------------.---------------.---------------.-------------.\n\
-        |under     |healthy             |overweight     |severe ow      |obese        |\n\
-        |          |18.5                |25             |30             |35           |\n\
-        .----------.--------------------.---------------.---------------.-------------.";
+.----------.--------------------.---------------.---------------.-------------.\n\
+|under     |healthy             |overweight     |severe ow      |obese        |\n\
+|          |18.5                |25             |30             |35           |\n\
+.----------.--------------------.---------------.---------------.-------------.";
 
     let pos = (80. * (bmi - 15.) / (40. - 15.)) as usize;
     let you = format!("^ You ({bmi:.1})\n");
@@ -76,7 +80,7 @@ fn show_vertical_bmi(bmi: f32) {
 ");
 
     let pos = (((REPS+1) as f32)*5.0 * (bmi-15.)/(40.-15.)) as usize;
-    let you = format!("You ({bmi:2.1}) -> |-");
+    let you = format!("You ({bmi:04.1}) -> |-");
 
     let mapper = |s| format!("              |-{s}");
 
