@@ -5,43 +5,68 @@ struct Data {
     height: f32,
 }
 
-fn main() {
+fn main() -> Result<(), io::Error> {
     // 1.87 metres is approx 6' 1.5"
     //
-    let hor = std::env::args().nth(1).is_some_and(|a| a.contains("-h"));
+    let do_horizontal_chart = std::env::args().nth(1).is_some_and(|a| a.contains("-h"));
 
     clear_screen();
-    let data = get_input().unwrap();
+    let data = get_input()?;
+    
     let bmi = data.weight / (data.height * data.height);
 
-    if hor {
+    if do_horizontal_chart {
         show_bmi(bmi);
     } else {
         show_vertical_bmi(bmi);
     }
+
+    Ok(())
 }
 
-fn get_input() -> Result<Data, String> {
+fn get_input() -> Result<Data, io::Error> {
     use std::io::Write;
 
-    let mut weight = String::new();
-    let mut height = String::new();
+    let mut weight: f32;
+    let mut height: f32;
 
-    print!("Enter your weight in kg: ");
-    io::stdout().flush().unwrap();
-    io::stdin().read_line(&mut weight).unwrap();
-    let weight: f32 = weight.trim().parse().unwrap();
+    loop {
+        let mut weight_str = String::new();
+        print!("Enter your weight in kg: ");
+        io::stdout().flush()?;
+        io::stdin().read_line(&mut weight_str)?;
+        weight = match weight_str.trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
+        
+        if weight <= 0.0 {
+            println!("Weight must be greater than 0!");
+            continue;
+        }
 
-    print!("Enter your height in meters: ");
-    io::stdout().flush().unwrap();
-    io::stdin().read_line(&mut height).unwrap();
-    let height: f32 = height.trim().parse().unwrap();
-
-    if height <= 0.0 {
-        Err("Height must be greater than 0!".to_string())
-    } else {
-        Ok(Data { weight, height })
+        break;
     }
+
+    loop {
+        let mut height_str = String::new();
+        print!("Enter your height in meters: ");
+        io::stdout().flush()?;
+        io::stdin().read_line(&mut height_str)?;
+        height = match height_str.trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
+
+        if height <= 0.0 {
+            println!("Height must be greater than 0!");
+            continue;
+        }
+
+        break;
+    }
+
+    Ok(Data { weight, height })
 }
 
 fn show_bmi(bmi: f32) {
