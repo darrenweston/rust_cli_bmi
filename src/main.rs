@@ -1,3 +1,5 @@
+#![warn(clippy::all, clippy::pedantic)]
+
 use std::io;
 
 struct Data {
@@ -126,6 +128,7 @@ fn show_vertical_bmi(bmi: f32) {
 
 fn clear_screen() {
     use std::process::Command;
+
     let output = if cfg!(target_os = "windows") {
         Command::new("cls").status()
     } else {
