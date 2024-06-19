@@ -78,6 +78,8 @@ fn show_bmi(bmi: f32) {
 |          |18.5                |25             |30             |35           |\n\
 .----------.--------------------.---------------.---------------.-------------.";
 
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_sign_loss)]
     let pos = (80. * (bmi - 15.) / (40. - 15.)) as usize;
     let you = format!("^ You ({bmi:.1})\n");
 
@@ -107,6 +109,9 @@ fn show_vertical_bmi(bmi: f32) {
 "
     );
 
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_sign_loss)]
+    #[allow(clippy::cast_precision_loss)]
     let pos = (((REPS + 1) as f32) * 5.0 * (bmi - 15.) / (40. - 15.)) as usize;
     let you = format!("You ({bmi:04.1}) -> |-");
 
