@@ -112,9 +112,11 @@ fn show_vertical_bmi(bmi: f32) {
 
     let mapper = |s| format!("              |-{s}");
 
-    let pre: String = txt.split('|').take(pos).map(mapper).collect();
-    let mid: String = txt.split('|').skip(pos).take(1).collect();
-    let post: String = txt.split('|').skip(pos + 1).map(mapper).collect();
+    let mut txt_iter = txt.split('|');
+
+    let pre: String = txt_iter.by_ref().take(pos).map(mapper).collect();
+    let mid: String = txt_iter.by_ref().take(1).collect();
+    let post: String = txt_iter.map(mapper).collect();
 
     let txt = format!("{pre}{you}{mid}{post}");
 
