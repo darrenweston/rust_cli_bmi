@@ -1,10 +1,32 @@
 #![warn(clippy::all, clippy::pedantic)]
 
 use std::io;
+use std::ops;
+
+struct Kilograms(f32);
+impl ops::Div<Meters> for Kilograms {
+    type Output = KilosPerMeter;
+
+    fn div(self, rhs: Meters) -> Self::Output {
+        KilosPerMeter(self.0 / rhs.0)
+    }
+}
+
+#[derive(Copy, Clone)]
+struct Meters(f32);
+impl ops::Mul<Meters> for Meters {
+    type Output = Meters;
+
+    fn mul(self, rhs: Meters) -> Self::Output {
+        Meters(self.0 * rhs.0)
+    }
+}
+
+struct KilosPerMeter(f32);
 
 struct Data {
-    weight: f32,
-    height: f32,
+    weight: Kilograms,
+    height: Meters,
 }
 
 fn main() -> Result<(), io::Error> {
@@ -19,9 +41,9 @@ fn main() -> Result<(), io::Error> {
     //let bmi = bmi.clamp(15., 40.);
 
     if do_horizontal_chart {
-        show_bmi(bmi);
+        show_bmi(&bmi);
     } else {
-        show_vertical_bmi(bmi);
+        show_vertical_bmi(&bmi);
     }
 
     Ok(())
@@ -30,8 +52,8 @@ fn main() -> Result<(), io::Error> {
 fn get_input() -> Result<Data, io::Error> {
     use std::io::Write;
 
-    let mut weight: f32;
-    let mut height: f32;
+    let mut weight: Kilograms;
+    let mut height: Meters;
 
     loop {
         let mut weight_str = String::new();
@@ -39,11 +61,11 @@ fn get_input() -> Result<Data, io::Error> {
         io::stdout().flush()?;
         io::stdin().read_line(&mut weight_str)?;
         weight = match weight_str.trim().parse() {
-            Ok(num) => num,
+            Ok(num) => Kilograms(num),
             Err(_) => continue,
         };
 
-        if weight <= 0.0 {
+        if weight.0 <= 0.0 {
             println!("Weight must be greater than 0!");
             continue;
         }
@@ -57,11 +79,11 @@ fn get_input() -> Result<Data, io::Error> {
         io::stdout().flush()?;
         io::stdin().read_line(&mut height_str)?;
         height = match height_str.trim().parse() {
-            Ok(num) => num,
+            Ok(num) => Meters(num),
             Err(_) => continue,
         };
 
-        if height <= 0.0 {
+        if height.0 <= 0.0 {
             println!("Height must be greater than 0!");
             continue;
         }
@@ -72,7 +94,7 @@ fn get_input() -> Result<Data, io::Error> {
     Ok(Data { weight, height })
 }
 
-fn show_bmi(bmi: f32) {
+fn show_bmi(bmi: &KilosPerMeter) {
     let txt = "\n\
 .----------.--------------------.---------------.---------------.-------------.\n\
 |under     |healthy             |overweight     |severe ow      |obese        |\n\
@@ -80,15 +102,15 @@ fn show_bmi(bmi: f32) {
 .----------.--------------------.---------------.---------------.-------------.";
 
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-    let pos = (80. * (bmi - 15.) / (40. - 15.)) as usize;
-    let you = format!("^ You ({bmi:.1})\n");
+    let pos = (80. * (bmi.0 - 15.) / (40. - 15.)) as usize;
+    let you = format!("^ You ({:.1})\n", bmi.0);
 
     //println!("pos is {pos}");
     println!("{txt}");
     println!("{}{}", " ".repeat(pos), you);
 }
 
-fn show_vertical_bmi(bmi: f32) {
+fn show_vertical_bmi(bmi: &KilosPerMeter) {
     const REPS: usize = 4;
     let spacer = "|\n".repeat(REPS).trim_end().to_string();
     let spacer2 = "|\n".repeat(REPS - 2).trim_end().to_string();
@@ -114,9 +136,9 @@ fn show_vertical_bmi(bmi: f32) {
         clippy::cast_sign_loss,
         clippy::cast_precision_loss
     )]
-    let pos = (((REPS + 1) as f32) * 5.0 * (bmi - 15.) / (40. - 15.)) as usize;
+    let pos = (((REPS + 1) as f32) * 5.0 * (bmi.0 - 15.) / (40. - 15.)) as usize;
 
-    let you = format!("You ({bmi:04.1}) -> |-");
+    let you = format!("You ({:04.1}) -> |-", bmi.0);
 
     let mapper = |s| format!("              |-{s}");
 
