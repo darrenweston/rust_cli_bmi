@@ -14,7 +14,7 @@ fn main() -> Result<(), io::Error> {
 
     clear_screen();
     let data = get_input()?;
-    
+
     let bmi = data.weight / (data.height * data.height);
     //let bmi = bmi.clamp(15., 40.);
 
@@ -42,7 +42,7 @@ fn get_input() -> Result<Data, io::Error> {
             Ok(num) => num,
             Err(_) => continue,
         };
-        
+
         if weight <= 0.0 {
             println!("Weight must be greater than 0!");
             continue;
@@ -109,8 +109,13 @@ fn show_vertical_bmi(bmi: f32) {
 "
     );
 
-    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::cast_precision_loss)]
+    #[allow(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::cast_precision_loss
+    )]
     let pos = (((REPS + 1) as f32) * 5.0 * (bmi - 15.) / (40. - 15.)) as usize;
+
     let you = format!("You ({bmi:04.1}) -> |-");
 
     let mapper = |s| format!("              |-{s}");
